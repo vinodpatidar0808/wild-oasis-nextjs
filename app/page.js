@@ -1,13 +1,23 @@
-import Link from "next/link";
+import bgImg from '@/public/bg.png';
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="">
-      {/* <Navigation /> */}
-      <h1>The Wild oasis! Welcome to paradise</h1>
-      {/* using anchor tag to navigate, refresh the page. Full page load. */}
-      {/* <a href="/cabins">Explore Luxury Cabins</a> */}
-      <Link href="/cabins">Explore Luxury Cabins</Link>
-    </div>
+    <main className="mt-24">
+      {/* NOTE: when you don't want to provide height/width import image statically and provided imported image as src value */}
+      <Image quality={80} fill placeholder="blur"  className="object-cover object-top" src={bgImg} alt="Mountains and forests with two cabins" />
+
+      <div className="relative z-10 text-center">
+        <h1 className="text-8xl text-primary-50 mb-10 tracking-tight font-normal">
+          Welcome to paradise.
+        </h1>
+        <a
+          href="/cabins"
+          className="bg-accent-500 px-8 py-6 text-primary-800 text-lg font-semibold hover:bg-accent-600 transition-all"
+        >
+          Explore luxury cabins
+        </a>
+      </div>
+    </main>
   );
 }
