@@ -1,6 +1,7 @@
-import Navigation from "@/app/components/Navigation"
-import Logo from "./components/Logo"
+import Logo from "@/app/_components/Logo"
+import Navigation from "@/app/_components/Navigation"
 
+import "@/app/_styles/globals.css"
 // you can add more metadata here, and customize the title of each page also.
 export const metadata = {
   title: 'The Wild Oasis!',
@@ -14,7 +15,7 @@ export default function RootLayout({ children }) {
     // NOTE: in root layout both html and body tags are required
     <html lang="en">
       <body>
-        <header>
+        <header className="bg-primary-950 text-primary-100 min-h-screen">
           <Logo />
           <Navigation />
         </header>
