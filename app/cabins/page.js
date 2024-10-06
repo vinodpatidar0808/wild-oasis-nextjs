@@ -1,4 +1,7 @@
 
+export const metadata = {
+  title: "Cabins"
+}
 
 // NOTE: you can call this component anything you like but many people use "Page"
 const Page = () => {
