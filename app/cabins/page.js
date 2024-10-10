@@ -1,12 +1,14 @@
 import CabinCard from "@/app/_components/CabinCard";
+import { getCabins } from "../_lib/data-service";
 
 export const metadata = {
   title: "Cabins"
 }
 
 // NOTE: you can call this component anything you like but many people use "Page"
-const Page = () => {
-  const cabins = [];
+const Page = async () => {
+  const cabins = await getCabins();
+  // const cabins = [];
 
   return (
     <div>
