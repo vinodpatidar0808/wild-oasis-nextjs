@@ -1,4 +1,4 @@
-import { getCabin } from "@/app/_lib/data-service";
+import { getCabin, getCabins } from "@/app/_lib/data-service";
 import { EyeSlashIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 
@@ -16,6 +16,16 @@ export const generateMetadata = async ({ params }) => {
   return {
     title: `Cabin ${name}`
   }
+}
+
+// NOTE: This function provides all possible id's ahead of time so, all the pages with id can be statically generated.
+// when we have finite set of ids and they are know, this is always a good idea to generate them statically.
+export const generateStaticParams = async () => {
+  const cabins = await getCabins();
+  // cabinId is key as we have the parameter in the url named as cabinId 
+  return cabins.map((cabin) => ({
+    cabinId: String(cabin.id)
+  }))
 }
 
 
