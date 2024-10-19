@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import CabinList from "../_components/CabinList";
+import Filter from "../_components/Filter";
 import Spinner from "../_components/Spinner";
 
 // NOTE: the value here needs to be some actual value and not a computation.
@@ -14,7 +15,10 @@ export const metadata = {
 
 
 // NOTE: you can call this component anything you like but many people use "Page"
-const Page = async () => {
+// NOTE: this searchParams is only available in page.js
+const Page = async ({ searchParams }) => {
+
+  const filters = searchParams?.capacity ?? "all"
 
   return (
     <div>
@@ -30,10 +34,13 @@ const Page = async () => {
         to paradise.
       </p>
 
+      <div className="flex justify-end mb-8">
+        <Filter />
+      </div>
 
-      <Suspense fallback={<Spinner />}>
-
-        <CabinList />
+      {/* NOTE: Suspense does not need filters but navigation in nextjs are wrapped inside react transitions which are omitted by Suspense after their first appearance, so to make this suspense work with every iteration pass uniqaue key value like we do in lists */}
+      <Suspense fallback={<Spinner />} key={filters}>
+        <CabinList filters={filters} />
       </Suspense>
     </div>
   );
