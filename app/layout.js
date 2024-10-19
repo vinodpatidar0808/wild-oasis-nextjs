@@ -10,6 +10,7 @@ const josefin = Josefin_Sans({
 
 import "@/app/_styles/globals.css"
 import Header from "./_components/Header"
+import { ReservationProvider } from "./_components/ReservationContext"
 // you can add more metadata here, and customize the title of each page also.
 export const metadata = {
   // title: 'The Wild Oasis!',
@@ -31,7 +32,9 @@ export default function RootLayout({ children }) {
         <div className="flex-1 px-8 py-12 grid ">
 
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            {children}
+            <ReservationProvider>
+              {children}
+            </ReservationProvider>
           </main>
         </div>
       </body>

@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import CabinList from "../_components/CabinList";
 import Filter from "../_components/Filter";
+import ReservationReminder from "../_components/ReservationReminder";
 import Spinner from "../_components/Spinner";
 
 // NOTE: the value here needs to be some actual value and not a computation.
@@ -41,6 +42,7 @@ const Page = async ({ searchParams }) => {
       {/* NOTE: Suspense does not need filters but navigation in nextjs are wrapped inside react transitions which are omitted by Suspense after their first appearance, so to make this suspense work with every iteration pass uniqaue key value like we do in lists */}
       <Suspense fallback={<Spinner />} key={filters}>
         <CabinList filters={filters} />
+        <ReservationReminder />
       </Suspense>
     </div>
   );
