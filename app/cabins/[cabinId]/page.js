@@ -1,7 +1,8 @@
-import TextExpander from "@/app/_components/TextExpander";
+import Cabin from "@/app/_components/Cabin";
+import Reservation from "@/app/_components/Reservation";
+import Spinner from "@/app/_components/Spinner";
 import { getCabin, getCabins } from "@/app/_lib/data-service";
-import { EyeSlashIcon, MapPinIcon, UsersIcon } from "@heroicons/react/24/solid";
-import Image from "next/image";
+import { Suspense } from "react";
 
 
 // NOTE: this way we cannot send random id/name based on the page content
@@ -33,57 +34,36 @@ export const generateStaticParams = async () => {
 // NOTE: dynamic route segment will come in this params object. You can get the paremeter from here. Here our folder name is /cabins/[cabinId] so you will get cabinId in params as this is dynamic segment
 export default async function Page({ params }) {
   const { cabinId } = params;
+  // NOTE: This three server calls are blocking waterfalls, i.e each call is blocked by the previous one, untill first finishes second won't be executing and so on. 
+  // solution : Promise.all()
   const cabin = await getCabin(cabinId);
-  const { id, name, maxCapacity, regularPrice, discount, image, description } =
-    cabin;
+  // const settings = await getSettings();
+  // const bookedDates = await getBookedDatesByCabinId(cabinId)
+
+  // 1. solution, this works and better than previous one, but still not best, if one operation takes pretty long time others will still have to wait.
+  // const [cabin, settings, bookedDates] = await Promise.all([getCabin(cabinId), getSettings(), getBookedDatesByCabinId(cabinId)])
+
+  //NOTE: better solution: -> extract this operations in individual components and stream them when they are ready.Instead of fetching all the data in parent itself. 
 
   return (
     <div className="max-w-6xl mx-auto mt-8">
-      <div className="grid grid-cols-[3fr_4fr] gap-20 border border-primary-800 py-3 px-10 mb-24">
-        <div className="relative scale-[1.15] -translate-x-3">
-          <Image src={image} fill className="object-cover" alt={`Cabin ${name}`} />
-        </div>
-
-        <div>
-          <h3 className="text-accent-100 font-black text-7xl mb-5 translate-x-[-254px] bg-primary-950 p-6 pb-1 w-[150%]">
-            Cabin {name}
-          </h3>
-
-          <p className="text-lg text-primary-300 mb-10">
-            <TextExpander>
-              {description}
-            </TextExpander>
-          </p>
-
-          <ul className="flex flex-col gap-4 mb-7">
-            <li className="flex gap-3 items-center">
-              <UsersIcon className="h-5 w-5 text-primary-600" />
-              <span className="text-lg">
-                For up to <span className="font-bold">{maxCapacity}</span>{" "}
-                guests
-              </span>
-            </li>
-            <li className="flex gap-3 items-center">
-              <MapPinIcon className="h-5 w-5 text-primary-600" />
-              <span className="text-lg">
-                Located in the heart of the{" "}
-                <span className="font-bold">Dolomites</span> (Italy)
-              </span>
-            </li>
-            <li className="flex gap-3 items-center">
-              <EyeSlashIcon className="h-5 w-5 text-primary-600" />
-              <span className="text-lg">
-                Privacy <span className="font-bold">100%</span> guaranteed
-              </span>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <Cabin cabin={cabin} />
 
       <div>
-        <h2 className="text-5xl font-semibold text-center">
-          Reserve today. Pay on arrival.
+        <h2 className="text-5xl font-semibold text-center text-accent-500 mb-10">
+          Reserve {cabin.name} today. Pay on arrival.
         </h2>
+
+        {/* Reservation section */}
+        {/* NOTE: extracting this out to another component */}
+        {/* <div className="grid grid-cols-2 border border-primary-800 min-h-[400px]">
+          <DateSelector />
+          <ReservationForm />
+        </div> */}
+
+        <Suspense fallback={<Spinner />}>
+          <Reservation cabin={cabin} />
+        </Suspense>
       </div>
     </div>
   );
