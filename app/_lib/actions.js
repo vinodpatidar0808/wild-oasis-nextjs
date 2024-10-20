@@ -3,6 +3,7 @@
 
 import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
+import { getBookings } from "./data-service";
 import supabase from "./supabase";
 
 export async function signInAction() {
@@ -40,4 +41,30 @@ export async function updateProfileAction(formData) {
   // if you pass '/account' --> it will revalidate data for all the routes below account, like /accout/*
   // revalidatePath('/account')
   revalidatePath('/account/profile')
+}
+
+
+
+export async function deleteReservationAction(bookingId) {
+  const session = await auth();
+  if (!session) throw new Error("You must be logged in to delete your reservation.")
+
+  // check if the current booking to be deleted belongs to actual user.
+  const guestBookings = await getBookings(session.user.guestId)
+  const userBooking = guestBookings.filter(booking => booking.id === bookingId)
+
+  if (userBooking.length === 0) {
+    throw new Error("You are not allowed to delete this booking.")
+  }
+
+
+  const { data, error } = await supabase.from('bookings').delete().eq('id', bookingId);
+
+
+  if (error) {
+    throw new Error("Reservation could not be deleted.")
+  }
+
+  // NOTE; this will revalidate all the data that is being fetched on a particular route. If you need to specifically revalidate a particular piece of data use revalidateTag
+  revalidatePath('/account/reservations')
 }
