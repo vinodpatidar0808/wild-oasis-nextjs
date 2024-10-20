@@ -1,6 +1,7 @@
 
 import NextAuth from "next-auth";
 import Google from 'next-auth/providers/google';
+import { createGuest, getGuest } from "./data-service";
 
 
 const config = {
@@ -14,6 +15,24 @@ const config = {
     authorized: async ({ auth, request }) => {
       return !!auth?.user
     },
+    async signIn({ user, account, profile }) {
+      try {
+        const existingGuest = await getGuest(user.email)
+
+        if (!existingGuest) {
+          await createGuest({ email: user.email, fullName: user.name })
+        }
+        return true
+      } catch (error) {
+        return false
+      }
+    },
+    async session({ session }) {
+      // we need guestid at many places in our app, one way to get this session id is call getGuest everywhere you need the guestId or add guestId in session itself.
+      const guest = await getGuest(session.user.email)
+      session.user.guestId = guest.id
+      return session;
+    }
   },
   pages: {
     signIn: '/login'
