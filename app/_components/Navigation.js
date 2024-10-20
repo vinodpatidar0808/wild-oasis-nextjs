@@ -4,7 +4,6 @@ import { auth } from "../_lib/auth";
 export default async function Navigation() {
   // NOTE:Important -> this auth function relies on cookies which are only accessible on runtime, this this function gets cookies from request.This navigation component is being used inside global layout, which is used everywhere. This makes our entire app dynamic. ()
   const session = await auth();
-  console.log('session: ', session)
   return (
     <nav className="z-10 text-xl">
       <ul className="flex gap-16 items-center">
