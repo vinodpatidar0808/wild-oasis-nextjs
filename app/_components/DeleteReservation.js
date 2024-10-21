@@ -5,7 +5,7 @@ import { useTransition } from "react";
 import { deleteReservationAction } from "../_lib/actions";
 import SpinnerMini from "./SpinnerMini";
 
-function DeleteReservation({ bookingId }) {
+function DeleteReservation({ bookingId, onDelete }) {
   // NOTE: you can define server action here also. 
   // function deleteReservation() {
   //   // never forget this directive, we never know when this component become client component. (if some client component imports it it will behave as a client component)
@@ -18,7 +18,7 @@ function DeleteReservation({ bookingId }) {
 
   const handleDelete = () => {
     if (confirm("Are you sure, you want to delete this booking?")) {
-      startTransition(() => deleteReservationAction(bookingId))
+      startTransition(() => onDelete(bookingId))
     }
   }
 
