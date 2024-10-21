@@ -2,9 +2,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "./auth";
 import { getBookings } from "./data-service";
 import supabase from "./supabase";
+
 
 export async function signInAction() {
   await signIn('google', { redirectTo: "/account" })
@@ -67,4 +69,41 @@ export async function deleteReservationAction(bookingId) {
 
   // NOTE; this will revalidate all the data that is being fetched on a particular route. If you need to specifically revalidate a particular piece of data use revalidateTag
   revalidatePath('/account/reservations')
+}
+
+export async function updateReservationAction(formData) {
+  const session = await auth()
+
+  if (!session) {
+    throw new Error("Please login to update the reservation.")
+  }
+
+  const bookingId = formData.get('bookingId')
+
+  // check if the current booking to be deleted belongs to actual user.
+  const guestBookings = await getBookings(session.user.guestId)
+  const userBooking = guestBookings.filter(booking => booking.id === +bookingId)
+  if (userBooking.length === 0) {
+    throw new Error("You are not allowed to update this booking.")
+  }
+
+  const updatedFields = { observations: formData.get("observations").slice(0, 1000), numGuests: formData.get('numGuests') }
+
+  const { error } = await supabase
+    .from('bookings')
+    .update(updatedFields)
+    .eq('id', bookingId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    throw new Error('Booking could not be updated');
+  }
+
+  // NOTE: revalidation should always happen before redirect
+  revalidatePath(`/account/reservations/edit/${bookingId}`)
+  revalidatePath('/account/reservations')
+  redirect('/account/reservations')
+
 }

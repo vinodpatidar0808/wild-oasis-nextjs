@@ -1,8 +1,8 @@
 'use client'
 
-import { useFormStatus } from 'react-dom';
 
 import { updateProfileAction } from "../_lib/actions";
+import SubmitButton from "./SubmitButton";
 
 const UpdateProfileForm = ({ children, guest }) => {
   const { fullName, email, nationality, nationalID, countryFlag } = guest
@@ -65,7 +65,7 @@ const UpdateProfileForm = ({ children, guest }) => {
       </div>
 
       <div className="flex justify-end items-center gap-6">
-        <Button />
+        <SubmitButton pendingLabel={'Updating...'}>Update Profile</SubmitButton>
       </div>
     </form>
   )
