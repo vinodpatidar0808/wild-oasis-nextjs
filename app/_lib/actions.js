@@ -107,3 +107,35 @@ export async function updateReservationAction(formData) {
   redirect('/account/reservations')
 
 }
+
+
+export async function createReservationAction(bookingData, formData) {
+
+  const session = await auth()
+
+  if (!session) {
+    throw new Error("Please login to update the reservation.")
+  }
+
+  // when you have many fields inside formData, you can do something like below.
+  // Object.entries(formData.entries)
+
+  const newBooking = { ...bookingData, guestId: session.user.guestId, numGuests: +formData.get("numGuests"), observations: formData.get('observations').slice(0, 1000), totalPrice: bookingData.cabinPrice, extrasPrice: 0, isPaid: false, hasBreakfast: false, status: "unconfirmed" }
+
+
+  const { data, error } = await supabase
+    .from('bookings')
+    .insert([newBooking])
+    // So that the newly created object gets returned!
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error('Booking could not be created');
+  }
+
+  revalidatePath(`/cabins/${bookingData.cabinId}`)
+
+  redirect('/cabins/thankyou')
+
+}
