@@ -120,7 +120,17 @@ export async function createReservationAction(bookingData, formData) {
   // when you have many fields inside formData, you can do something like below.
   // Object.entries(formData.entries)
 
-  const newBooking = { ...bookingData, guestId: session.user.guestId, numGuests: +formData.get("numGuests"), observations: formData.get('observations').slice(0, 1000), totalPrice: bookingData.cabinPrice, extrasPrice: 0, isPaid: false, hasBreakfast: false, status: "unconfirmed" }
+  const newBooking = {
+    ...bookingData,
+    guestId: session.user.guestId,
+    numGuests: +formData.get("numGuests"),
+    observations: formData.get('observations').slice(0, 1000),
+    totalPrice: bookingData.cabinPrice,
+    extrasPrice: 0,
+    isPaid: false,
+    hasBreakfast: false,
+    status: "unconfirmed"
+  }
 
 
   const { data, error } = await supabase
